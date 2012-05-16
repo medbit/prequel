@@ -4,7 +4,7 @@ version := "0.3.8"
 
 organization := "net.noerd"
 
-scalaVersion := "2.9.2"
+scalaVersion := "2.9.1"
 
 // Runtime Dependencies
 libraryDependencies ++= Seq(
