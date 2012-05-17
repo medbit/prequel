@@ -2,9 +2,7 @@ package net.noerd.prequel
 
 import java.util.Date
 
-import org.joda.time.DateTime
-import org.joda.time.Duration
-import org.joda.time.format.DateTimeFormatter
+import org.joda.time.{LocalDate, DateTime, Duration}
 
 //
 // String
@@ -80,6 +78,12 @@ class DateColumnType( row: ResultSetRow ) extends ColumnType[ Date ] {
 }
 object DateColumnType extends ColumnTypeFactory[ Date ] {
     def apply( row: ResultSetRow ) = new DateColumnType( row )
+}
+class LocalDateColumnType( row: ResultSetRow ) extends ColumnType[ LocalDate ] {
+  override def nextValueOption: Option[ LocalDate ] = row.nextDate.map( d => new LocalDate( d.getTime ))
+}
+object LocalDateColumnType extends ColumnTypeFactory[ LocalDate ] {
+  def apply( row: ResultSetRow ) = new LocalDateColumnType( row )
 }
 
 //
