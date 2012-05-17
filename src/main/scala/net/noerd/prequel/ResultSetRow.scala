@@ -25,10 +25,12 @@ class ResultSetRow( val rs: ResultSet ) {
     def nextLong: Option[ Long ] = nextValueOption( rs.getLong )
     def nextFloat: Option[ Float ] = nextValueOption( rs.getFloat )
     def nextDouble: Option[ Double ] = nextValueOption( rs.getDouble )
+    def nextBigDecimal: Option[ java.math.BigDecimal ] = nextValueOption( rs.getBigDecimal )
     def nextString: Option[ String ] = nextValueOption( rs.getString )
     def nextDate: Option[ Date ] =  nextValueOption( rs.getTimestamp )
     def nextObject: Option[ AnyRef ] = nextValueOption( rs.getObject )
-        
+
+
     def columnNames: Seq[ String ]= {          
         val columnNames = ArrayBuffer.empty[ String ]
         val metaData = rs.getMetaData
@@ -80,6 +82,7 @@ object ResultSetRowImplicits {
     implicit def row2Long( row: ResultSetRow ): Long = LongColumnType( row ).nextValue
     implicit def row2Float( row: ResultSetRow ) = FloatColumnType( row ).nextValue
     implicit def row2Double( row: ResultSetRow ) = DoubleColumnType( row ).nextValue
+    implicit def row2BigDecimal( row: ResultSetRow ) = BigDecimalColumnType( row ).nextValue
     implicit def row2String( row: ResultSetRow ) = StringColumnType( row ).nextValue
     implicit def row2Date( row: ResultSetRow ) = DateColumnType( row ).nextValue
     implicit def row2DateTime( row: ResultSetRow ) = DateTimeColumnType( row ).nextValue
@@ -91,8 +94,10 @@ object ResultSetRowImplicits {
     implicit def row2LongOption( row: ResultSetRow ) = LongColumnType( row ).nextValueOption
     implicit def row2FloatOption( row: ResultSetRow ) = FloatColumnType( row ).nextValueOption
     implicit def row2DoubleOption( row: ResultSetRow ) = DoubleColumnType( row ).nextValueOption
+    implicit def row2BigDecimalOption( row: ResultSetRow ) = BigDecimalColumnType( row ).nextValueOption
     implicit def row2StringOption( row: ResultSetRow ) = StringColumnType( row ).nextValueOption
     implicit def row2DateOption( row: ResultSetRow ) = DateColumnType( row ).nextValueOption
     implicit def row2DateTimeOption( row: ResultSetRow ) = DateTimeColumnType( row ).nextValueOption
+    implicit def row2LocalDateOption( row: ResultSetRow ) = LocalDateColumnType( row ).nextValueOption
     implicit def row2DurationOption( row: ResultSetRow ) = DurationColumnType( row ).nextValueOption
 }

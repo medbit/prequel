@@ -65,6 +65,16 @@ object DoubleColumnType extends ColumnTypeFactory[ Double ] {
 }
 
 //
+// BigDecimal
+//
+class BigDecimalColumnType( row: ResultSetRow ) extends ColumnType[ BigDecimal ] {
+  override def nextValueOption: Option[ BigDecimal ] = row.nextBigDecimal.map( d => BigDecimal.javaBigDecimal2bigDecimal( d ) )
+}
+object BigDecimalColumnType extends ColumnTypeFactory[ BigDecimal ] {
+  def apply( row: ResultSetRow ) = new BigDecimalColumnType( row )
+}
+
+//
 // DateTime
 //
 class DateTimeColumnType( row: ResultSetRow ) extends ColumnType[ DateTime ] {
