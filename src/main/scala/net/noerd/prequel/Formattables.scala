@@ -2,8 +2,7 @@ package net.noerd.prequel
 
 import java.util.Date
 
-import org.joda.time.DateTime
-import org.joda.time.Duration
+import org.joda.time.{LocalDate, DateTime, Duration}
 import org.joda.time.format.DateTimeFormatter
 
 /**
@@ -151,6 +150,9 @@ object DateTimeFormattable{
     }
     def apply( value: Date) = {
         new DateTimeFormattable( new DateTime( value ) )
+    }
+    def apply( value: LocalDate) = {
+      new DateTimeFormattable( value.toDateTimeAtStartOfDay )
     }
 }
 
