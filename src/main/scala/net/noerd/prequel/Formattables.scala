@@ -133,6 +133,20 @@ object DoubleFormattable{
 }
 
 //
+// BigDecimal
+//
+class BigDecimalFormattable( val value: BigDecimal ) extends Formattable {
+  override def escaped( formatter: SQLFormatter ): String = value.toString()
+  override def addTo( statement: ReusableStatement ): Unit = {
+    statement.addBigDecimal( value )
+  }
+}
+object BigDecimalFormattable{
+  def apply( value: BigDecimal ) = new BigDecimalFormattable( value )
+}
+
+
+//
 // DateTime
 //
 class DateTimeFormattable( val value: DateTime ) 

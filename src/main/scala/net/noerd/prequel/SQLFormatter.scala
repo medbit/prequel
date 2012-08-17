@@ -74,6 +74,7 @@ object SQLFormatterImplicits {
     implicit def int2Formattable( wrapped: Int ) = IntFormattable( wrapped )
     implicit def float2Formattable( wrapped: Float ) = FloatFormattable( wrapped )
     implicit def double2Formattable( wrapped: Double ) = DoubleFormattable( wrapped )
+    implicit def bigDecimal2Formattable( wrapped: BigDecimal ) = BigDecimalFormattable( wrapped )
     implicit def dateTime2Formattable( wrapped: DateTime ) = DateTimeFormattable( wrapped )
     implicit def date2Formattable( wrapped: Date ) = DateTimeFormattable( wrapped )
     implicit def localDate2Formattable( wrapped: LocalDate ) = DateTimeFormattable( wrapped )
@@ -106,6 +107,11 @@ object SQLFormatterImplicits {
 
     implicit def doubleOpt2Formattable( wrapped: Option[Double] ):Formattable = wrapped match {
       case Some( wrapperSome ) => double2Formattable( wrapperSome )
+      case None => Nullable(None)
+    }
+
+    implicit def bigDecimalOpt2Formattable( wrapped: Option[BigDecimal] ):Formattable = wrapped match {
+      case Some( wrapperSome ) => bigDecimal2Formattable( wrapperSome )
       case None => Nullable(None)
     }
 

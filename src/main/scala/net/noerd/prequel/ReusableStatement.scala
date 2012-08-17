@@ -93,7 +93,13 @@ private class ReusableStatement( val wrapped: PreparedStatement, formatter: SQLF
     /**
      * Add a Double to the current parameter index
      */    
-    def addDouble( value: Double ): Unit = addValue( () => wrapped.setDouble( parameterIndex, value ) )    
+    def addDouble( value: Double ): Unit = addValue( () => wrapped.setDouble( parameterIndex, value ) )
+
+    /**
+     * Add a BigDecimal to the current parameter index
+     */
+    def addBigDecimal( value: BigDecimal ): Unit =
+      addValue( () => wrapped.setBigDecimal( parameterIndex, value.underlying() ) )
 
     /**
      * Add Null to the current parameter index
