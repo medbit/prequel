@@ -6,6 +6,8 @@ organization := "net.noerd"
 
 scalaVersion := "2.9.1"
 
+resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
+
 // Runtime Dependencies
 libraryDependencies ++= Seq(
     "commons-pool" % "commons-pool" % "1.5.5",
