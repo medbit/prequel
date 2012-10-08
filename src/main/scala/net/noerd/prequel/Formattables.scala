@@ -1,6 +1,6 @@
 package net.noerd.prequel
 
-import java.util.Date
+import java.util.{Locale, Date}
 
 import org.joda.time.{LocalDate, DateTime, Duration}
 import org.joda.time.format.DateTimeFormatter
@@ -110,7 +110,7 @@ object IntFormattable{
 // Float
 //
 class FloatFormattable( val value: Float ) extends Formattable {
-    override def escaped( formatter: SQLFormatter ): String = "%f".format( value )
+    override def escaped( formatter: SQLFormatter ): String = "%f".formatLocal(Locale.ENGLISH, value )
     override def addTo( statement: ReusableStatement ): Unit = {
         statement.addFloat( value )
     }
@@ -123,7 +123,7 @@ object FloatFormattable{
 // Double
 //
 class DoubleFormattable( val value: Double ) extends Formattable {
-    override def escaped( formatter: SQLFormatter ): String = "%f".format( value )
+    override def escaped( formatter: SQLFormatter ): String = "%f".formatLocal(Locale.ENGLISH,  value )
     override def addTo( statement: ReusableStatement ): Unit = {
         statement.addDouble( value )
     }
