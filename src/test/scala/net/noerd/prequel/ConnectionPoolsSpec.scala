@@ -10,19 +10,22 @@ class ConnectionPoolsSpec extends FunSpec with ShouldMatchers with BeforeAndAfte
     
     val config1 = DatabaseConfig( 
         driver = "org.hsqldb.jdbc.JDBCDriver",
-        jdbcURL = "jdbc:hsqldb:mem:config1"
+        jdbcURL = "jdbc:hsqldb:mem:poolconfig1"
     )
     val config1Copy = DatabaseConfig( 
         driver = "org.hsqldb.jdbc.JDBCDriver",
-        jdbcURL = "jdbc:hsqldb:mem:config1"
+        jdbcURL = "jdbc:hsqldb:mem:poolconfig1"
     )
     val config2 = DatabaseConfig( 
         driver = "org.hsqldb.jdbc.JDBCDriver",
-        jdbcURL = "jdbc:hsqldb:mem:config2"
+        jdbcURL = "jdbc:hsqldb:mem:poolconfig2"
     )
 
-    override def beforeEach() = {
-        ConnectionPools.reset()
+    override def beforeEach() {
+      ConnectionPools.reset()
+    }
+    override def afterEach() {
+      ConnectionPools.reset()
     }
     describe( "ConnectionPools" ) {
         

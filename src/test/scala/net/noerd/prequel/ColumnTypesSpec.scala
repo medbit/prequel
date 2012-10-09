@@ -1,7 +1,6 @@
 package net.noerd.prequel
 
-import org.joda.time.DateTime
-import org.joda.time.Duration
+import org.joda.time.{LocalDate, DateTime, Duration}
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
@@ -22,9 +21,9 @@ trait ColumnTypeSpec[ T ] extends FunSpec with ShouldMatchers {
         
         it( "should handle both defined and undefined value" ) { database.transaction { tx =>
 
-            // Using the test identifier as table since tables in hsqldb are not
-            // transaction safe objects.
-            val table = testIdentifier
+            // Using the test identifier and sql type as table since tables
+            // in hsqldb are not transaction safe objects.
+            val table = testIdentifier + sqlType.replaceAll("[^a-zA-Z]", "")
 
             tx.execute( 
                 "create table ?(c1 ?, c2 ?)", 
@@ -41,10 +40,22 @@ trait ColumnTypeSpec[ T ] extends FunSpec with ShouldMatchers {
     }
 }
 
+class BigDecimalColumnTypeSpec extends ColumnTypeSpec[ BigDecimal ] {
+  def sqlType = "numeric(8,2)"
+  val testValue = BigDecimalFormattable( new BigDecimal(new java.math.BigDecimal(42)) )
+  def columnTypeFactory = BigDecimalColumnType
+}
+
 class DateTimeColumnTypeSpec extends ColumnTypeSpec[ DateTime ] {    
     def sqlType = "timestamp"
     val testValue = DateTimeFormattable( new DateTime )
     def columnTypeFactory = DateTimeColumnType
+}
+
+class LocalDateColumnTypeSpec extends ColumnTypeSpec[ DateTime] {
+  def sqlType = "date"
+  val testValue = DateTimeFormattable( new LocalDate )
+  def columnTypeFactory = DateTimeColumnType
 }
 
 class DurationColumnTypeSpec extends ColumnTypeSpec[ Duration ] {    

@@ -3,7 +3,7 @@ package net.noerd.prequel
 import java.util.{Locale, Date}
 
 import org.joda.time.{LocalDate, DateTime, Duration}
-import org.joda.time.format.DateTimeFormatter
+import java.sql.SQLException
 
 /**
  * Wrap your optional value in NullComparable to compare with null if None. 
@@ -149,7 +149,7 @@ object BigDecimalFormattable{
 //
 // DateTime
 //
-class DateTimeFormattable( val value: DateTime ) 
+class DateTimeFormattable( val value: DateTime )
 extends Formattable {
     override def escaped( formatter: SQLFormatter ): String = {
         formatter.toSQLString( formatter.timeStampFormatter.print( value ) )
@@ -185,4 +185,19 @@ extends Formattable {
 }
 object DurationFormattable{
     def apply( value: Duration ) = new DurationFormattable( value )
+}
+
+//
+// Identity replacement: leaves '?' unchanged when formatting an SQL string
+// Not for use when actually running a query!
+//
+protected class BindFormattable extends Formattable {
+  val value = "?"
+  override def escaped( formatter: SQLFormatter ): String = value
+  override def addTo( statement: ReusableStatement ): Unit = {
+    throw new SQLException("Cannot add BindFormattable to a statement")
+  }
+}
+object BindFormattable{
+  def apply() = new BindFormattable()
 }

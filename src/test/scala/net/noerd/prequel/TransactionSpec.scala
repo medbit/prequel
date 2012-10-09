@@ -10,16 +10,17 @@ import org.scalatest.BeforeAndAfterEach
 
 import net.noerd.prequel.SQLFormatterImplicits._
 import net.noerd.prequel.ResultSetRowImplicits._
+import org.joda.time.{DateTime, LocalDate}
 
 class TransactionSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEach {
     
     val database = TestDatabase.config
     
     override def beforeEach() = database.transaction { tx =>
-        tx.execute( "create table transactionspec(id int, name varchar(265))" )
-        tx.execute( "insert into transactionspec values(?, ?)", 242, "test1" )
-        tx.execute( "insert into transactionspec values(?, ?)", 23, "test2" )
-        tx.execute( "insert into transactionspec values(?, ?)", 42, "test3" )
+        tx.execute( "create table transactionspec(id int, name varchar(265), start date, starttime timestamp)" )
+        tx.execute( "insert into transactionspec values(?, ?, ?, ?)", 242, "test1", new LocalDate(1900,1,1) , new DateTime(1934,7,7,23,59))
+        tx.execute( "insert into transactionspec values(?, ?, ?, ?)", 23, "test2", new LocalDate()  , new DateTime())
+        tx.execute( "insert into transactionspec values(?, ?, ?, ?)", 42, "test3", new LocalDate(2040,10,13), new DateTime(2050,5,5,0,1))
     }
     
     override def afterEach() = database.transaction { tx =>
@@ -27,7 +28,7 @@ class TransactionSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEac
     }    
 
     describe( "Transaction" ) {
-        
+
         describe( "select" ) {
             
             it( "should return a Seq of the records converted by block" ) {
@@ -51,6 +52,30 @@ class TransactionSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEac
                 
                     actual should be ('empty) 
                 }
+            }
+            it( "should handle LocalDates" ) {
+              database.transaction { tx =>
+                val expected = 2
+                val actual = tx.selectLong(
+                  """select count(start) from transactionspec
+                              where start > ?
+                  """,
+                  new LocalDate(2000,1,1))
+
+                actual should be (expected)
+              }
+            }
+            it( "should handle DateTimes" ) {
+              database.transaction { tx =>
+                val expected = 2
+                val actual = tx.selectLong(
+                  """select count(starttime) from transactionspec
+                                where starttime > ?
+                  """,
+                  new DateTime(2000,1,1,0,0))
+
+                actual should be (expected)
+              }
             }
         }
 
@@ -138,7 +163,7 @@ class TransactionSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEac
                 case class Item( v1: Long, v2: String )
                 val items = Seq( Item( 1, "test" ), Item( 1, "test" ) )
                 val count = database.transaction { tx =>
-                    tx.executeBatch( "insert into transactionspec values(?, ?)" ) { statement =>
+                    tx.executeBatch( "insert into transactionspec(id,name) values(?, ?)" ) { statement =>
                         var counter = 0
                         items.foreach { item =>
                             counter += ( statement << item.v1 << item.v2 <<! )
@@ -170,25 +195,26 @@ class TransactionSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEac
                 case class Item( v1: Long, v2: String )
 
                 def executeBatch( query: String, items: Iterable[ Item], tx: Transaction ): Long = {
-                    val start = System.currentTimeMillis
+                    val start = System.nanoTime
                     tx.executeBatch( query ) { statement =>
                         items.foreach { item =>
-                            statement << item.v1 << item.v2 <<!
+                            (statement << item.v1 << item.v2).<<!
                         }
                     }
-                    System.currentTimeMillis - start
+                    System.nanoTime - start
                 }
                 
                 def normalExecute( query: String, items: Iterable[ Item], tx: Transaction ): Long = {
-                    val start = System.currentTimeMillis
+                    val start = System.nanoTime
                     items.foreach { item =>
                         tx.execute( query, item.v1, item.v2 )
                     }
-                    System.currentTimeMillis - start
+                    System.nanoTime - start
                 }
                 
                 
-                val size = 1000
+                val size = 5000
+
                 val items = {
                     val tmp = new ArrayBuffer[Item]
                     for (i <- 0 until size) {
@@ -198,11 +224,11 @@ class TransactionSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEac
                 }
                 
                 database.transaction { tx =>
-                    val sql = "insert into transactionspec values(?, ?)"
+                    val sql = "insert into transactionspec(id,name) values(?, ?)"
                     val normalTiming = normalExecute( sql, items, tx )
                     val batchTiming = executeBatch( sql, items, tx )
                     val difference: Double = normalTiming / batchTiming
-                    println( "executing "+size+" made a difference of "+(difference*100)+"%" )
+                    info( "executing "+size+" made a difference of "+(difference*100)+"%" )
                     difference should be > (1.0)
                 }
             }
