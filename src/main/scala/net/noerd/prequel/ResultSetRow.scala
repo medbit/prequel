@@ -27,6 +27,7 @@ class ResultSetRow( val rs: ResultSet ) {
     def nextDouble: Option[ Double ] = nextValueOption( rs.getDouble )
     def nextBigDecimal: Option[ java.math.BigDecimal ] = nextValueOption( rs.getBigDecimal )
     def nextString: Option[ String ] = nextValueOption( rs.getString )
+    def nextNString: Option[ String ] = nextValueOption( rs.getNString )
     def nextDate: Option[ Date ] =  nextValueOption( rs.getTimestamp )
     def nextObject: Option[ AnyRef ] = nextValueOption( rs.getObject )
 

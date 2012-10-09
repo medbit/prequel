@@ -58,10 +58,16 @@ class LocalDateColumnTypeSpec extends ColumnTypeSpec[ DateTime] {
   def columnTypeFactory = DateTimeColumnType
 }
 
-class DurationColumnTypeSpec extends ColumnTypeSpec[ Duration ] {    
+class DurationColumnTypeSpec extends ColumnTypeSpec[ Duration ] {
     def sqlType = "bigint"
     val testValue = DurationFormattable( Duration.standardHours( 24 ) )
     def columnTypeFactory = DurationColumnType
+}
+
+class NStringColumnTypeSpec extends ColumnTypeSpec[ String ] {
+    def sqlType = "nvarchar(256)" // note: nvarchar is synonym for varchar in hsqldb
+    val testValue = NStringFormattable( "hello this is a string in n-charset; some unicode: åäö 델리만쥬" )
+    def columnTypeFactory = NStringColumnType
 }
 
 class StringColumnTypeSpec extends ColumnTypeSpec[ String ] {

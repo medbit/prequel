@@ -68,6 +68,21 @@ object StringFormattable{
 }
 
 //
+// NString
+//
+class NStringFormattable( val value: String ) extends Formattable {
+  override def escaped( formatter: SQLFormatter ): String = {
+    formatter.toSQLString( value )
+  }
+  override def addTo( statement: ReusableStatement ): Unit = {
+    statement.addString( value )
+  }
+}
+object NStringFormattable{
+  def apply( value: String ) = new StringFormattable( value )
+}
+
+//
 // Boolean
 // 
 class BooleanFormattable( val value: Boolean ) extends Formattable {

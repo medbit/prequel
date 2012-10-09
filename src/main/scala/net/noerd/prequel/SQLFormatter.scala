@@ -20,27 +20,27 @@ class SQLFormatter(
     val timeStampFormatter: DateTimeFormatter
 ) {
     private val sqlQuote = "'"
-    
+
     def format( sql: String, params: Formattable* ): String = formatSeq( sql, params.toSeq )
 
     def formatSeq( sql: String, params: Seq[ Formattable ] ): String = {
         sql.replace("?", "%s").format( params.map( p => p.escaped( this ) ): _* )
     }
-    
+
     /**
      * Escapes  "'" and "\" in the string for use in a sql query
      */
     def escapeString( str: String ): String = escapeSql( str ).replace( "\\", "\\\\" )
-    
+
     /**
-     * Quotes the passed string according to the formatter 
+     * Quotes the passed string according to the formatter
      */
     def quoteString( str: String ): String = {
         val sb = new StringBuilder
         sb.append( sqlQuote ).append( str ).append( sqlQuote )
         sb.toString
     }
-    
+
     /**
      * Escapes and quotes the given string
      */
@@ -53,14 +53,14 @@ object SQLFormatter {
      */
     val DefaultSQLFormatter = SQLFormatter()
     /**
-     * SQLFormatter for usage with HSQLDB. 
+     * SQLFormatter for usage with HSQLDB.
      */
     val HSQLDBSQLFormatter = SQLFormatter(
         DateTimeFormat.forPattern( "yyyy-MM-dd HH:mm:ss.SSSS" )
     )
-        
-    private[ prequel ] def apply( 
-        timeStampFormatter: DateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis 
+
+    private[ prequel ] def apply(
+        timeStampFormatter: DateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis
     ) = {
         new SQLFormatter( timeStampFormatter )
     }
@@ -69,6 +69,7 @@ object SQLFormatter {
 object SQLFormatterImplicits {
 
     implicit def string2Formattable( wrapped: String ) = StringFormattable( wrapped )
+    def nstring2Formattable( wrapped: String ) = NStringFormattable( wrapped ) // don't clash with the above implicit
     implicit def boolean2Formattable( wrapped: Boolean ) = BooleanFormattable( wrapped )
     implicit def long2Formattable( wrapped: Long ) = LongFormattable( wrapped )
     implicit def int2Formattable( wrapped: Int ) = IntFormattable( wrapped )

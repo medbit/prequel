@@ -80,6 +80,15 @@ class ReusableStatement(val wrapped: PreparedStatement, formatter: SQLFormatter)
     )
   }
 
+  /**
+   * Add a String in national charset to the current parameter index
+   */
+  def addNString(value: String) {
+    addValue(() =>
+      wrapped.setNString(parameterIndex, formatter.escapeString(value))
+    )
+  }
+
 
   /**
    * Add an sql.Date to the current parameter index.
@@ -96,7 +105,7 @@ class ReusableStatement(val wrapped: PreparedStatement, formatter: SQLFormatter)
    */
   def addDateTime(value: DateTime) {
     addValue(() =>
-      wrapped.setTimestamp(parameterIndex, new Timestamp(value.getMillis))
+      wrapped.setTimestamp(parameterIndex, new Timestamp(value.getMillis), value.toGregorianCalendar)
     )
   }
 

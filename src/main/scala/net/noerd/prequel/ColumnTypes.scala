@@ -15,6 +15,16 @@ object StringColumnType extends ColumnTypeFactory[ String ] {
 }
 
 //
+// NString
+//
+class NStringColumnType( row: ResultSetRow ) extends ColumnType[ String ] {
+  override def nextValueOption: Option[ String ] = row.nextNString
+}
+object NStringColumnType extends ColumnTypeFactory[ String ] {
+  def apply( row: ResultSetRow ) = new StringColumnType( row )
+}
+
+//
 // Boolean
 // 
 class BooleanColumnType( row: ResultSetRow ) extends ColumnType[ Boolean ] {
