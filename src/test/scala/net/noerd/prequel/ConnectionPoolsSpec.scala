@@ -21,12 +21,6 @@ class ConnectionPoolsSpec extends FunSpec with ShouldMatchers with BeforeAndAfte
         jdbcURL = "jdbc:hsqldb:mem:poolconfig2"
     )
 
-    override def beforeEach() {
-      ConnectionPools.reset()
-    }
-    override def afterEach() {
-      ConnectionPools.reset()
-    }
     describe( "ConnectionPools" ) {
         
         describe( "getOrCreatePool" ) {
@@ -41,15 +35,15 @@ class ConnectionPoolsSpec extends FunSpec with ShouldMatchers with BeforeAndAfte
             }
             
             it( "should reuse an existing pool if the configuration is the same" ) {
-                
-                ConnectionPools.getOrCreatePool( config1 )
-                ConnectionPools.nbrOfPools should be (1)
 
                 ConnectionPools.getOrCreatePool( config1 )
-                ConnectionPools.nbrOfPools should be (1)
+                val expected = ConnectionPools.nbrOfPools
+
+                ConnectionPools.getOrCreatePool( config1 )
+                ConnectionPools.nbrOfPools should be (expected)
 
                 ConnectionPools.getOrCreatePool( config1Copy )
-                ConnectionPools.nbrOfPools should be (1)
+                ConnectionPools.nbrOfPools should be (expected)
             }
         }
     }
