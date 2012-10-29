@@ -7,8 +7,7 @@ import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.BeforeAndAfterEach
 
-import org.joda.time.DateTime
-import org.joda.time.Duration
+import org.joda.time.{LocalTime, LocalDate, DateTime, Duration}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import net.noerd.prequel.SQLFormatterImplicits._
@@ -85,6 +84,39 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextDate.get.getTime should equal (value1.get.getTime)
                 row.nextDate should equal (value2)
             }
+        } }
+
+        it( "should return a LocalDate (i.e. ignore time)" ) { database.transaction { tx =>
+          val value1 = Some( new LocalDate )
+          val value2 = None
+          tx.execute( "create table localdate_table(c1 date, c2 date)" )
+          tx.execute( "insert into localdate_table values(?, null)", value1.get )
+          tx.select( "select c1, c2 from localdate_table" ) { row =>
+            row.nextDate.get.getTime should equal (value1.get.toDate.getTime)
+            row.nextDate should equal (value2)
+          }
+        } }
+
+        it( "should return a Time" ) { database.transaction { tx =>
+          val value1 = Some( new LocalTime )
+          val value2 = None
+          tx.execute( "create table time_table(c1 time, c2 time)" )
+          tx.execute( "insert into time_table values(?, null)", value1.get )
+          tx.select( "select c1, c2 from time_table" ) { row =>
+            new LocalTime(row.nextTime.get) should equal (value1.get.withMillisOfSecond(0))
+            row.nextTime should equal (value2)
+          }
+        } }
+
+        it( "should return a DateTime" ) { database.transaction { tx =>
+          val value1 = Some( new DateTime )
+          val value2 = None
+          tx.execute( "create table datetime_table(c1 timestamp, c2 timestamp)" )
+          tx.execute( "insert into datetime_table values(?, null)", value1.get )
+          tx.select( "select c1, c2 from datetime_table" ) { row =>
+            row.nextDateTime.get.getTime should equal (value1.get.getMillis)
+            row.nextDateTime should equal (value2)
+          }
         } }
 
         it( "should return a Float" ) { database.transaction { tx =>

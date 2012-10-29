@@ -2,8 +2,8 @@ package net.noerd.prequel
 
 import java.util.{Locale, Date}
 
-import org.joda.time.{LocalDate, DateTime, Duration}
-import java.sql.SQLException
+import org.joda.time._
+import java.sql.{Time, SQLException}
 
 /**
  * Wrap your optional value in NullComparable to compare with null if None. 
@@ -173,6 +173,7 @@ extends Formattable {
         statement.addDateTime( value )
     }
 }
+
 object DateTimeFormattable{
     def apply( value: DateTime ) = {
         new DateTimeFormattable( value )
@@ -183,6 +184,86 @@ object DateTimeFormattable{
     def apply( value: LocalDate) = {
       new DateTimeFormattable( value.toDateTimeAtStartOfDay )
     }
+    def apply( value: LocalDateTime) = {
+      new DateTimeFormattable( value.toDateTime )
+    }
+}
+
+//
+// LocalDateTime
+//
+class LocalDateTimeFormattable( val value: LocalDateTime )
+  extends Formattable {
+  override def escaped( formatter: SQLFormatter ): String = {
+    formatter.toSQLString( formatter.timeStampFormatter.print( value ) )
+  }
+  override def addTo( statement: ReusableStatement ): Unit = {
+    statement.addDateTime( value.toDateTime )
+  }
+}
+object LocalDateTimeFormattable{
+  def apply( value: LocalDateTime ) = {
+    new LocalDateTimeFormattable( value )
+  }
+  def apply( value: Date) = {
+    new LocalDateTimeFormattable( new LocalDateTime( value ) )
+  }
+  def apply( value: LocalDate) = {
+    new LocalDateTimeFormattable( value.toLocalDateTime(LocalTime.MIDNIGHT) )
+  }
+}
+
+
+//
+// LocalDate
+//
+class LocalDateFormattable( val value: LocalDate )
+  extends Formattable {
+  override def escaped( formatter: SQLFormatter ): String = {
+    formatter.toSQLString( formatter.dateFormatter.print( value ) )
+  }
+  override def addTo( statement: ReusableStatement ): Unit = {
+    statement.addLocalDate( value )
+  }
+}
+object LocalDateFormattable{
+  def apply( value: LocalDate ) = {
+    new LocalDateFormattable( value )
+  }
+  def apply( value: Date) = {
+    new LocalDateFormattable( new LocalDate( value ) )
+  }
+  def apply( value: LocalDateTime) = {
+    new LocalDateFormattable( value.toLocalDate )
+  }
+}
+
+//
+// LocalTime
+//
+class TimeFormattable( val value: LocalTime )
+  extends Formattable {
+  override def escaped( formatter: SQLFormatter ): String = {
+    formatter.toSQLString( formatter.timeFormatter.print( value ) )
+  }
+  override def addTo( statement: ReusableStatement ): Unit = {
+    statement.addLocalTime( value )
+  }
+}
+
+object TimeFormattable{
+  def apply( value: LocalTime ) = {
+    new TimeFormattable( value.withMillisOfSecond(0) )
+  }
+  def apply( value: Date) = {
+    new TimeFormattable( new LocalTime( value ) )
+  }
+  def apply( value: LocalDateTime) = {
+    new TimeFormattable( value.toLocalTime )
+  }
+  def apply( value: DateTime) = {
+    new TimeFormattable( value.toLocalTime )
+  }
 }
 
 //

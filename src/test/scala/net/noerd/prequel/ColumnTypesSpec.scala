@@ -1,6 +1,6 @@
 package net.noerd.prequel
 
-import org.joda.time.{LocalDate, DateTime, Duration}
+import org.joda.time._
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
@@ -52,10 +52,22 @@ class DateTimeColumnTypeSpec extends ColumnTypeSpec[ DateTime ] {
     def columnTypeFactory = DateTimeColumnType
 }
 
-class LocalDateColumnTypeSpec extends ColumnTypeSpec[ DateTime] {
+class LocalDateColumnTypeSpec extends ColumnTypeSpec[ LocalDate] {
   def sqlType = "date"
-  val testValue = DateTimeFormattable( new LocalDate )
-  def columnTypeFactory = DateTimeColumnType
+  val testValue = LocalDateFormattable( new LocalDate )
+  def columnTypeFactory = LocalDateColumnType
+}
+
+class LocalTimeColumnTypeSpec extends ColumnTypeSpec[ LocalTime] {
+  def sqlType = "time"
+  val testValue = TimeFormattable( new LocalTime )
+  def columnTypeFactory = LocalTimeColumnType
+}
+
+class LocalDateTimeColumnTypeSpec extends ColumnTypeSpec[ LocalDateTime] {
+  def sqlType = "timestamp"
+  val testValue = LocalDateTimeFormattable( new LocalDateTime )
+  def columnTypeFactory = LocalDateTimeColumnType
 }
 
 class DurationColumnTypeSpec extends ColumnTypeSpec[ Duration ] {

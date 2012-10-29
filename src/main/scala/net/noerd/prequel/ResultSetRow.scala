@@ -2,13 +2,10 @@ package net.noerd.prequel
 
 import java.util.Date
 
-import java.sql.ResultSet
-import java.sql.ResultSetMetaData
+import java.sql.{Time, ResultSet}
 
 import scala.collection.mutable.ArrayBuffer
 
-import org.joda.time.DateTime
-import org.joda.time.Duration
 
 /**
  * Wraps a ResultSet in a row context. The ResultSetRow gives access
@@ -29,6 +26,8 @@ class ResultSetRow( val rs: ResultSet ) {
     def nextString: Option[ String ] = nextValueOption( rs.getString )
     def nextNString: Option[ String ] = nextValueOption( rs.getNString )
     def nextDate: Option[ Date ] =  nextValueOption( rs.getTimestamp )
+    def nextTime: Option[ Time ] =  nextValueOption( rs.getTime )
+    def nextDateTime: Option[ Date ] =  nextValueOption( rs.getTimestamp )
     def nextObject: Option[ AnyRef ] = nextValueOption( rs.getObject )
 
 
@@ -88,6 +87,8 @@ object ResultSetRowImplicits {
     implicit def row2Date( row: ResultSetRow ) = DateColumnType( row ).nextValue
     implicit def row2DateTime( row: ResultSetRow ) = DateTimeColumnType( row ).nextValue
     implicit def row2LocalDate( row: ResultSetRow ) = LocalDateColumnType( row ).nextValue
+    implicit def row2LocalTime( row: ResultSetRow ) = LocalTimeColumnType( row ).nextValue
+    implicit def row2LocalDateTime( row: ResultSetRow ) = LocalDateTimeColumnType( row ).nextValue
     implicit def row2Duration( row: ResultSetRow ) = DurationColumnType( row ).nextValue
 
     implicit def row2BooleanOption( row: ResultSetRow ) = BooleanColumnType( row ).nextValueOption
@@ -100,5 +101,6 @@ object ResultSetRowImplicits {
     implicit def row2DateOption( row: ResultSetRow ) = DateColumnType( row ).nextValueOption
     implicit def row2DateTimeOption( row: ResultSetRow ) = DateTimeColumnType( row ).nextValueOption
     implicit def row2LocalDateOption( row: ResultSetRow ) = LocalDateColumnType( row ).nextValueOption
+    implicit def row2LocalTimeOption( row: ResultSetRow ) = LocalTimeColumnType( row ).nextValueOption
     implicit def row2DurationOption( row: ResultSetRow ) = DurationColumnType( row ).nextValueOption
 }

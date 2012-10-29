@@ -4,10 +4,11 @@ import java.util.Date
 
 import org.apache.commons.lang.StringEscapeUtils.escapeSql
 
-import org.joda.time.{LocalDate, DateTime, Duration}
+import org.joda.time._
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
+import scala.Some
 
 /**
  * Currently a private class responsible for formatting SQL used in 
@@ -17,7 +18,9 @@ import org.joda.time.format.ISODateTimeFormat
  * See their documentation for more info on how to use them.
  */
 class SQLFormatter(
-    val timeStampFormatter: DateTimeFormatter
+    val timeStampFormatter: DateTimeFormatter,
+    val dateFormatter: DateTimeFormatter,
+    val timeFormatter: DateTimeFormatter
 ) {
     private val sqlQuote = "'"
 
@@ -56,13 +59,17 @@ object SQLFormatter {
      * SQLFormatter for usage with HSQLDB.
      */
     val HSQLDBSQLFormatter = SQLFormatter(
-        DateTimeFormat.forPattern( "yyyy-MM-dd HH:mm:ss.SSSS" )
+        timeStampFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSSS"),
+        dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd"),
+        timeFormatter = DateTimeFormat.forPattern("HH:mm:ss")
     )
 
     private[ prequel ] def apply(
-        timeStampFormatter: DateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis
+        timeStampFormatter: DateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis,
+        dateFormatter: DateTimeFormatter = ISODateTimeFormat.date,
+        timeFormatter: DateTimeFormatter = ISODateTimeFormat.timeNoMillis
     ) = {
-        new SQLFormatter( timeStampFormatter )
+        new SQLFormatter( timeStampFormatter , dateFormatter, timeFormatter )
     }
 }
 
@@ -79,6 +86,8 @@ object SQLFormatterImplicits {
     implicit def dateTime2Formattable( wrapped: DateTime ) = DateTimeFormattable( wrapped )
     implicit def date2Formattable( wrapped: Date ) = DateTimeFormattable( wrapped )
     implicit def localDate2Formattable( wrapped: LocalDate ) = DateTimeFormattable( wrapped )
+    implicit def localDateTime2Formattable( wrapped: LocalDateTime ) = LocalDateTimeFormattable( wrapped )
+    implicit def localTime2Formattable( wrapped: LocalTime ) = TimeFormattable( wrapped )
     implicit def duration2Formattable( wrapped: Duration ) = new DurationFormattable( wrapped )
 
     implicit def stringOpt2Formattable( wrapped: Option[String] ):Formattable = wrapped match {
@@ -128,6 +137,16 @@ object SQLFormatterImplicits {
 
     implicit def localDateOpt2Formattable( wrapped: Option[LocalDate] ):Formattable = wrapped match {
       case Some( wrapperSome ) =>  localDate2Formattable( wrapperSome )
+      case None => Nullable(None)
+    }
+
+    implicit def localDateTimeOpt2Formattable( wrapped: Option[LocalDateTime] ):Formattable = wrapped match {
+      case Some( wrapperSome ) =>  localDateTime2Formattable( wrapperSome )
+      case None => Nullable(None)
+    }
+
+    implicit def localTimeOpt2Formattable( wrapped: Option[LocalTime] ):Formattable = wrapped match {
+      case Some( wrapperSome ) =>  localTime2Formattable( wrapperSome )
       case None => Nullable(None)
     }
 

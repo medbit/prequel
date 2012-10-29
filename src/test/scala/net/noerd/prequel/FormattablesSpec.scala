@@ -27,12 +27,24 @@ class FormattablesSpec extends FunSpec with ShouldMatchers {
         ),        
         ( "DoubleFormattable should escape 1.500000", 
             DoubleFormattable( 1.500000F ), "1.500000" 
-        ),        
-        ( "DateTimeFormattable should escape 2010-03-13 13:00:00.0000", 
-            DateTimeFormattable( formatter.timeStampFormatter.parseDateTime( "2010-03-13 13:00:00.0000" ) ), 
-            "'2010-03-13 13:00:00.0000'"
         ),
-        ( "DurationFormattable should escape an Duration object", 
+        ( "DateTimeFormattable should escape 2010-03-13 13:00:00.0000",
+          DateTimeFormattable( formatter.timeStampFormatter.parseDateTime( "2010-03-13 13:00:00.0000" ) ),
+          "'2010-03-13 13:00:00.0000'"
+        ),
+        ( "LocalTimeFormattable should escape 13:00:00",
+          TimeFormattable( formatter.timeFormatter.parseLocalTime( "13:00:00" ) ),
+          "'13:00:00'"
+        ),
+        ( "LocalDateFormattable should escape 2010-03-13",
+          LocalDateFormattable( formatter.dateFormatter.parseLocalDate( "2010-03-13" ) ),
+          "'2010-03-13'"
+        ),
+        ( "LocalDateTimeFormattable should escape 2010-03-13 13:00:00.0000",
+          LocalDateTimeFormattable( formatter.timeStampFormatter.parseLocalDateTime( "2010-03-13 13:00:00.0000" ) ),
+          "'2010-03-13 13:00:00.0000'"
+        ),
+        ( "DurationFormattable should escape an Duration object",
             DurationFormattable( Duration.standardHours( 2 ) ), "7200000"
         ),
         ( "NullComparable should escape defined formattable", 

@@ -2,7 +2,7 @@ package net.noerd.prequel
 
 import java.sql._
 
-import org.joda.time.{LocalDate, DateTime}
+import org.joda.time.{LocalTime, LocalDate, DateTime}
 
 /**
  * Wrapper around PreparedStatement making is easier to add parameters.
@@ -100,6 +100,15 @@ class ReusableStatement(val wrapped: PreparedStatement, formatter: SQLFormatter)
   }
 
   /**
+   * Add an sql.Time to the current parameter index.
+   */
+  def addSqlTime(value: java.sql.Time) {
+    addValue(() =>
+      wrapped.setTime(parameterIndex, value)
+    )
+  }
+
+  /**
    * Add a Date to the current parameter index. This is done by setTimestamp which
    * loses the Timezone information of the DateTime
    */
@@ -116,6 +125,14 @@ class ReusableStatement(val wrapped: PreparedStatement, formatter: SQLFormatter)
   def addLocalDate(value: LocalDate) {
     addSqlDate(new Date(value.toDateTimeAtStartOfDay.getMillis))
 
+  }
+
+  /**
+   * Add a LocalTime to the current parameter index. This is done by toDateTimeToday.getMillis which
+   * converts to an sql.Time
+   */
+  def addLocalTime(value: LocalTime) {
+    addSqlTime(new Time(value.toDateTimeToday.getMillis))
   }
 
   /**
