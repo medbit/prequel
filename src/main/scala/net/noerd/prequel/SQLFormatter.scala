@@ -85,7 +85,7 @@ object SQLFormatterImplicits {
     implicit def bigDecimal2Formattable( wrapped: BigDecimal ) = BigDecimalFormattable( wrapped )
     implicit def dateTime2Formattable( wrapped: DateTime ) = DateTimeFormattable( wrapped )
     implicit def date2Formattable( wrapped: Date ) = DateTimeFormattable( wrapped )
-    implicit def localDate2Formattable( wrapped: LocalDate ) = DateTimeFormattable( wrapped )
+    implicit def localDate2Formattable( wrapped: LocalDate ) = LocalDateFormattable( wrapped )
     implicit def localDateTime2Formattable( wrapped: LocalDateTime ) = LocalDateTimeFormattable( wrapped )
     implicit def localTime2Formattable( wrapped: LocalTime ) = TimeFormattable( wrapped )
     implicit def duration2Formattable( wrapped: Duration ) = new DurationFormattable( wrapped )
