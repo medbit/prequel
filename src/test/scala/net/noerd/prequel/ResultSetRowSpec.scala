@@ -40,6 +40,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextBoolean should equal (value1)
                 row.nextBoolean should equal (value2)
             }
+            tx.select( "select c1, c2 from boolean_table" ) { row =>
+              row.columnBoolean("c1") should equal (value1)
+              row.columnBoolean("c2") should equal (value2)
+            }
         } }
         
         it( "should return a Long" ) { database.transaction { tx =>
@@ -51,8 +55,12 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextLong should equal (value1)
                 row.nextLong should equal (value2)
             }
+            tx.select( "select c1, c2 from long_table" ) { row =>
+              row.columnLong("c1") should equal (value1)
+              row.columnLong("c2") should equal (value2)
+            }
         } }
-        
+
         it( "should return an Int" ) { database.transaction { tx =>
             val value1 = Some( 12345 )
             val value2 = None
@@ -62,8 +70,12 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextInt should equal (value1)
                 row.nextInt should equal (value2)
             }
+            tx.select( "select c1, c2 from int_table" ) { row =>
+              row.columnInt("c1") should equal (value1)
+              row.columnInt("c2") should equal (value2)
+            }
         } }
-        
+
         it( "should return a String" ) { database.transaction { tx =>
             val value1 = Some( "test" )
             val value2 = None
@@ -72,6 +84,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
             tx.select( "select c1, c2 from string_table" ) { row =>
                 row.nextString should equal (value1)
                 row.nextString should equal (value2)
+            }
+            tx.select( "select c1, c2 from string_table" ) { row =>
+              row.columnString("c1") should equal (value1)
+              row.columnString("c2") should equal (value2)
             }
         } }
 
@@ -84,6 +100,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextDate.get.getTime should equal (value1.get.getTime)
                 row.nextDate should equal (value2)
             }
+            tx.select( "select c1, c2 from date_table" ) { row =>
+              row.columnDate("c1").get.getTime should equal (value1.get.getTime)
+              row.columnDate("c2") should equal (value2)
+            }
         } }
 
         it( "should return a LocalDate (i.e. ignore time)" ) { database.transaction { tx =>
@@ -94,6 +114,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
           tx.select( "select c1, c2 from localdate_table" ) { row =>
             row.nextDate.get.getTime should equal (value1.get.toDate.getTime)
             row.nextDate should equal (value2)
+          }
+          tx.select( "select c1, c2 from localdate_table" ) { row =>
+            row.columnDate("c1").get.getTime should equal (value1.get.toDate.getTime)
+            row.columnDate("c2") should equal (value2)
           }
         } }
 
@@ -106,6 +130,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
             new LocalTime(row.nextTime.get) should equal (value1.get.withMillisOfSecond(0))
             row.nextTime should equal (value2)
           }
+          tx.select( "select c1, c2 from time_table" ) { row =>
+            new LocalTime(row.columnTime("c1").get) should equal (value1.get.withMillisOfSecond(0))
+            row.columnTime("c2") should equal (value2)
+          }
         } }
 
         it( "should return a DateTime" ) { database.transaction { tx =>
@@ -116,6 +144,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
           tx.select( "select c1, c2 from datetime_table" ) { row =>
             row.nextDateTime.get.getTime should equal (value1.get.getMillis)
             row.nextDateTime should equal (value2)
+          }
+          tx.select( "select c1, c2 from datetime_table" ) { row =>
+            row.columnDateTime("c1").get.getTime should equal (value1.get.getMillis)
+            row.columnDateTime("c2") should equal (value2)
           }
         } }
 
@@ -128,8 +160,12 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextFloat should equal (value1)
                 row.nextFloat should equal (value2)
             }
+            tx.select( "select c1, c2 from float_table" ) { row =>
+              row.columnFloat("c1") should equal (value1)
+              row.columnFloat("c2") should equal (value2)
+            }
         } }
-        
+
         it( "should return a Double" ) { database.transaction { tx =>
             val value1 = Some(3274832748932743.45)
             val value2 = None
@@ -139,6 +175,10 @@ class ResultSetRowSpec extends FunSpec with ShouldMatchers with BeforeAndAfterEa
                 row.nextDouble should equal (value1)
                 row.nextDouble should equal (value2)
             }
-        } }        
+            tx.select( "select c1, c2 from double_table" ) { row =>
+              row.columnDouble("c1") should equal (value1)
+              row.columnDouble("c2") should equal (value2)
+            }
+        } }
     }
 }

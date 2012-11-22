@@ -30,8 +30,20 @@ class ResultSetRow( val rs: ResultSet ) {
     def nextDateTime: Option[ Date ] =  nextValueOption( rs.getTimestamp )
     def nextObject: Option[ AnyRef ] = nextValueOption( rs.getObject )
 
+    def columnBoolean(columnName: String): Option[ Boolean ] = columnValueOption(columnName, rs.getBoolean )
+    def columnInt(columnName: String): Option[ Int ] = columnValueOption(columnName, rs.getInt )
+    def columnLong(columnName: String): Option[ Long ] = columnValueOption(columnName, rs.getLong )
+    def columnFloat(columnName: String): Option[ Float ] = columnValueOption(columnName, rs.getFloat )
+    def columnDouble(columnName: String): Option[ Double ] = columnValueOption(columnName, rs.getDouble )
+    def columnBigDecimal(columnName: String): Option[ java.math.BigDecimal ] = columnValueOption(columnName, rs.getBigDecimal )
+    def columnString(columnName: String): Option[ String ] = columnValueOption(columnName, rs.getString )
+    def columnNString(columnName: String): Option[ String ] = columnValueOption(columnName, rs.getNString )
+    def columnDate(columnName: String): Option[ Date ] =  columnValueOption(columnName, rs.getTimestamp )
+    def columnTime(columnName: String): Option[ Time ] =  columnValueOption(columnName, rs.getTime )
+    def columnDateTime(columnName: String): Option[ Date ] =  columnValueOption(columnName, rs.getTimestamp )
+    def columnObject(columnName: String): Option[ AnyRef ] = columnValueOption(columnName, rs.getObject )
 
-    def columnNames: Seq[ String ]= {          
+    def columnNames: Seq[ String ]= {
         val columnNames = ArrayBuffer.empty[ String ]
         val metaData = rs.getMetaData
         for(index <- 0.until( metaData.getColumnCount ) ) {
@@ -39,8 +51,8 @@ class ResultSetRow( val rs: ResultSet ) {
         }
         columnNames
     }
-    
-    private def incrementPosition = { 
+
+    private def incrementPosition = {
         position = position + 1 
     }
 
@@ -50,6 +62,13 @@ class ResultSetRow( val rs: ResultSet ) {
         if( rs.wasNull ) None
         else Some( value )
     }
+
+    def columnValueOption[T](columnName:String, f: (String) => T ): Option[ T ] = {
+      val value = f(columnName)
+      if( rs.wasNull ) None
+      else Some( value )
+    }
+
 }
 
 object ResultSetRow {
@@ -58,6 +77,10 @@ object ResultSetRow {
         new ResultSetRow( rs )
     }
 }
+
+
+case class Column(name: String)
+
 /**
  * Defines a number of implicit conversion methods for the supported ColumnTypes. A call
  * to one of these methods will return the next value of the right type. The methods make
@@ -103,4 +126,33 @@ object ResultSetRowImplicits {
     implicit def row2LocalDateOption( row: ResultSetRow ) = LocalDateColumnType( row ).nextValueOption
     implicit def row2LocalTimeOption( row: ResultSetRow ) = LocalTimeColumnType( row ).nextValueOption
     implicit def row2DurationOption( row: ResultSetRow ) = DurationColumnType( row ).nextValueOption
+}
+
+object ResultSetRowColumnImplicits {
+    implicit def row2Boolean( column: Column )(implicit row: ResultSetRow) = BooleanColumnType( row ).columnValue(column.name)
+    implicit def row2Int( column: Column )(implicit row: ResultSetRow): Int = IntColumnType( row ).columnValue(column.name)
+    implicit def row2Long( column: Column )(implicit row: ResultSetRow): Long = LongColumnType( row ).columnValue(column.name)
+    implicit def row2Float( column: Column )(implicit row: ResultSetRow) = FloatColumnType( row ).columnValue(column.name)
+    implicit def row2Double( column: Column )(implicit row: ResultSetRow) = DoubleColumnType( row ).columnValue(column.name)
+    implicit def row2BigDecimal( column: Column )(implicit row: ResultSetRow) = BigDecimalColumnType( row ).columnValue(column.name)
+    implicit def row2String( column: Column )(implicit row: ResultSetRow) = StringColumnType( row ).columnValue(column.name)
+    implicit def row2Date( column: Column )(implicit row: ResultSetRow) = DateColumnType( row ).columnValue(column.name)
+    implicit def row2DateTime( column: Column )(implicit row: ResultSetRow) = DateTimeColumnType( row ).columnValue(column.name)
+    implicit def row2LocalDate( column: Column )(implicit row: ResultSetRow) = LocalDateColumnType( row ).columnValue(column.name)
+    implicit def row2LocalTime( column: Column )(implicit row: ResultSetRow) = LocalTimeColumnType( row ).columnValue(column.name)
+    implicit def row2LocalDateTime( column: Column )(implicit row: ResultSetRow) = LocalDateTimeColumnType( row ).columnValue(column.name)
+    implicit def row2Duration( column: Column )(implicit row: ResultSetRow) = DurationColumnType( row ).columnValue(column.name)
+
+    implicit def row2BooleanOption( column: Column )(implicit row: ResultSetRow) = BooleanColumnType( row ).columnValueOption(column.name)
+    implicit def row2IntOption( column: Column )(implicit row: ResultSetRow) = IntColumnType( row ).columnValueOption(column.name)
+    implicit def row2LongOption( column: Column )(implicit row: ResultSetRow) = LongColumnType( row ).columnValueOption(column.name)
+    implicit def row2FloatOption( column: Column )(implicit row: ResultSetRow) = FloatColumnType( row ).columnValueOption(column.name)
+    implicit def row2DoubleOption( column: Column )(implicit row: ResultSetRow) = DoubleColumnType( row ).columnValueOption(column.name)
+    implicit def row2BigDecimalOption( column: Column )(implicit row: ResultSetRow) = BigDecimalColumnType( row ).columnValueOption(column.name)
+    implicit def row2StringOption( column: Column )(implicit row: ResultSetRow) = StringColumnType( row ).columnValueOption(column.name)
+    implicit def row2DateOption( column: Column )(implicit row: ResultSetRow) = DateColumnType( row ).columnValueOption(column.name)
+    implicit def row2DateTimeOption( column: Column )(implicit row: ResultSetRow) = DateTimeColumnType( row ).columnValueOption(column.name)
+    implicit def row2LocalDateOption( column: Column )(implicit row: ResultSetRow) = LocalDateColumnType( row ).columnValueOption(column.name)
+    implicit def row2LocalTimeOption( column: Column )(implicit row: ResultSetRow) = LocalTimeColumnType( row ).columnValueOption(column.name)
+    implicit def row2DurationOption( column: Column )(implicit row: ResultSetRow) = DurationColumnType( row ).columnValueOption(column.name)
 }
